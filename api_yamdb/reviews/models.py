@@ -45,10 +45,11 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Slug категории',
+        on_delete=models.SET_NULL
     )
     genre = models.ManyToManyField(
         Genre,
-        through='TitleGenre'
+        through='GenreTitle'
     )
     name = models.CharField(
         'Название',
@@ -73,8 +74,18 @@ class Title(models.Model):
 
 
 class GenreTitle(models.Model):
-    genre_id = models.ForeignKey(Genre)
-    title_id = models.ForeignKey(Title)
+    genre_id = models.ForeignKey(
+        Genre,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+    title_id = models.ForeignKey(
+        Title,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return f'{self.genre} {self.title}'

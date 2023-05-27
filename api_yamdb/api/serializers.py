@@ -91,7 +91,8 @@ class TitleReadSerializer(serializers.ModelSerializer):
 
     def validate_year(self, value):
         if value > date.today().year:
-            raise serializers.ValidationError('Год не межет быть больше текущего.')
+            raise serializers.ValidationError(
+                'Год не межет быть больше текущего.')
         return value
 
 
