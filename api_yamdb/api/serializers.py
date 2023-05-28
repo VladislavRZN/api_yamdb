@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg
+from datetime import date
 
 from reviews.models import Comments, Genres, Category, Title, Review
 ### модели Comments и Rewiew - добавлены заранее, чтобы потом сократить время. ###
@@ -87,6 +88,12 @@ class TitleReadSerializer(serializers.ModelSerializer):
             return None
         rev = Review.objects.filter(title=obj).aggregate(rating=Avg('score'))
         return rev['rating']
+
+    def validate_year(self, value):
+        if value > date.today().year:
+            raise serializers.ValidationError(
+                'Год не межет быть больше текущего.')
+        return value
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
