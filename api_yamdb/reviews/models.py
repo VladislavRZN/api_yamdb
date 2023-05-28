@@ -1,9 +1,6 @@
 from django.db import models
 
 
-STR_LENGTH = 15
-
-
 class Category(models.Model):
     name = models.CharField(
         'Название',
@@ -21,10 +18,6 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.title[:STR_LENGTH]
-
-
-class Genres(models.Model):
         return self.name
 
 
@@ -45,8 +38,6 @@ class Genre(models.Model):
         verbose_name_plural = 'Жанры'
 
     def __str__(self):
-       title_category_genres
-        return self.title[:STR_LENGTH]
         return self.slug
 
 
@@ -54,11 +45,6 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Slug категории',
-        title_category_genres
-    )
-    genre = models.ForeignKey(
-        Genres,
-        verbose_name='Slug жанра',
         on_delete=models.SET_NULL
     )
     genre = models.ManyToManyField(
@@ -69,17 +55,10 @@ class Title(models.Model):
         'Название',
         max_length=256,
     )
-    title_category_genres
-    year = models.DateTimeField('Год выпуска')
     year = models.IntegerField('Год выпуска')
+
     description = models.TextField(
         'Описание',
-        blank=True,
-        null=True
-    )
-
-    title_category_genres
-    rating = models.FloatField(
         blank=True,
         null=True
     )
@@ -91,8 +70,7 @@ class Title(models.Model):
         default_related_name = 'titles'
 
     def __str__(self):
-        return self.text[:STR_LENGTH]
-
+        return self.name
 
 
 class GenreTitle(models.Model):

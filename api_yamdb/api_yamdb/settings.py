@@ -23,20 +23,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles'
-
-    'rest_framework',
-
-    'API.apps.ApiConfig',
     'reviews.apps.ReviewsConfig',
-    'django.contrib.staticfiles',
 
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
-    
+
     'api',
     'reviews',
     'users',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
