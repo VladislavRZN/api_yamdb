@@ -13,29 +13,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+AUTH_USER_MODEL = 'users.User'
 
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
-    'reviews.apps.ReviewsConfig',
-
-    'API.apps.ApiConfig',
-    'reviews.apps.ReviewsConfig',
     'django.contrib.staticfiles',
 
-    'rest_framework',
-    'django_filters',
     'rest_framework_simplejwt',
+    'django_filters',
+    'rest_framework',
 
-    'api',
-    'reviews',
-    'users',
+    'reviews.apps.ReviewsConfig',
+    'users.apps.UserConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
