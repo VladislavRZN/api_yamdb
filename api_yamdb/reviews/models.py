@@ -140,14 +140,14 @@ class Comment(models.Model):
         on_delete=models.CASCADE
     )
     text = models.TextField()
-    created = models.DateTimeField(
+    pub_date = models.DateTimeField(
         "Дата добавления",
         auto_now_add=True,
         db_index=True
     )
 
     class Meta:
-        ordering = ('created',)
+        ordering = ('pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         default_related_name = 'comments'
