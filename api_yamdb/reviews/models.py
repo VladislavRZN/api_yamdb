@@ -47,7 +47,9 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Slug категории',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
     genre = models.ManyToManyField(
         Genre,
@@ -94,11 +96,13 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE,
+        Title,
+        on_delete=models.CASCADE,
         related_name='reviews'
     )
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,
+        User,
+        on_delete=models.CASCADE,
         related_name='reviews'
     )
     pub_date = models.DateTimeField(
@@ -123,18 +127,27 @@ class Review(models.Model):
         ]
 
 
-class Comment(models.Model):
+class Comments(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments"
+        User,
+        on_delete=models.CASCADE,
     )
-    title= models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name="comments"
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE
     )
     text = models.TextField()
-    created = models.DateTimeField(
-        "Дата добавления", auto_now_add=True, db_index=True
+    pub_date = models.DateTimeField(
+        "Дата добавления",
+        auto_now_add=True,
+        db_index=True
     )
-    
+
+    class Meta:
+        ordering = ('pub_date',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+        default_related_name = 'comments'
+
     def __str__(self):
         return self.author
-    
