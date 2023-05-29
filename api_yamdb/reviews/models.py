@@ -3,6 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from users.models import User
 
+
 class Category(models.Model):
     name = models.CharField(
         'Название',
@@ -94,6 +95,7 @@ class GenreTitle(models.Model):
     def __str__(self):
         return f'{self.genre} {self.title}'
 
+
 class Review(models.Model):
     title = models.ForeignKey(
         Title,
@@ -119,6 +121,7 @@ class Review(models.Model):
             MinValueValidator(1)
         ],
     )
+
     class Meta:
         ordering = ['-pub_date']
         constraints = [
