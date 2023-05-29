@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.db.models import Avg
+from datetime import date
 
-from reviews.models import Comments, Genres, Category, Title, Review
-### модели Comments и Rewiew - добавлены заранее, чтобы потом сократить время. ###
+from reviews.models import Comments, Genre, Category, Title, Review
 from users.models import User
 
 
@@ -65,7 +65,7 @@ class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Genre."""
     class Meta:
         exclude = ('id', )
-        model = Genres
+        model = Genre
         lookup_field = 'slug'
 
 
@@ -88,6 +88,12 @@ class TitleReadSerializer(serializers.ModelSerializer):
         rev = Review.objects.filter(title=obj).aggregate(rating=Avg('score'))
         return rev['rating']
 
+    def validate_year(self, value):
+        if value > date.today().year:
+            raise serializers.ValidationError(
+                'Год не межет быть больше текущего.')
+        return value
+
 
 class TitleWriteSerializer(serializers.ModelSerializer):
     """Сериализатор для записи данных модели Title."""
@@ -96,7 +102,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug'
     )
     genre = serializers.SlugRelatedField(
-        queryset=Genres.objects.all(),
+        queryset=Genre.objects.all(),
         slug_field='slug',
         many=True
     )
