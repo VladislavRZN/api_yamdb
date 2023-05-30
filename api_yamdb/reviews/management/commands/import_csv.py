@@ -7,6 +7,9 @@ from django.core.management import BaseCommand
 class Command(BaseCommand):
     help = 'Импорт данных из csv файлов в базу данных'
 
+    def handle(self, *args, **kwargs):
+        conn = sqlite3.connect('db.sqlite3', check_same_thread=False)
+
         df = pandas.read_csv("static/data/category.csv")
         df.to_sql("reviews_category", conn, if_exists='append', index=False)
 
