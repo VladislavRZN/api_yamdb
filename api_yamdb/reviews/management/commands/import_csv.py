@@ -1,32 +1,33 @@
-import csv
+import sqlite3
+import pandas
 
-from django.core.management.base import BaseCommand
-from api_yamdb.settings import BASE_DIR
-
-from reviews.models import Category, Comments, Genre, GenreTitle, Review, Title
-from users.models import User
-
-
-csv_to_models = (
-    ('category.csv', Category),
-    ('comments.csv', Comments),
-    ('genre_title.csv', GenreTitle),
-    ('genre.csv', Genre),
-    ('review.csv', Review),
-    ('titles.csv', Title),
-    ('users.csv', User),
-)
+from django.core.management import BaseCommand
 
 
 class Command(BaseCommand):
     help = 'Импорт данных из csv файлов в базу данных'
 
-    def handle(self, *args, **options):
-        csv_path = BASE_DIR / 'static/data/'
+    def handle(self, *args, **kwargs):
+        conn = sqlite3.connect('db.sqlite3', check_same_thread=False)
 
-        for csv_file, _model in csv_to_models:
-            file = csv_path / csv_file
-            with open(file, encoding='utf-8'):
-                rows = csv.DictReader(file, delimiter=';', quotechar='"')
-                for row in rows:
-                    _model.objects.create(**row)
+        df = pandas.read_csv("static/data/category.csv")
+        df.to_sql("reviews_category", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/comments.csv")
+        df.to_sql("reviews_comments", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/genre.csv")
+        df.to_sql("reviews_genre", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/genre_title.csv")
+        df.to_sql("reviews_genretitle", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/review.csv")
+        df.to_sql("reviews_review", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/titles.csv")
+        df.to_sql("reviews_title", conn, if_exists='append', index=False)
+
+        df = pandas.read_csv("static/data/users.csv")
+        df.to_sql("users_user", conn, if_exists='append', index=False)
+
