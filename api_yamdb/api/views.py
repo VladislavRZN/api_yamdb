@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
+from django.db.models import Avg
 from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
@@ -25,10 +26,10 @@ from .serializers import (
 
 
 class SignUpView(APIView):
-    '''
+    """
     POST-запрос с email и username генерирует
     письмо с кодом для получения токена.
-    '''
+    """
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserCreateSerializer
     queryset = User.objects.all()
@@ -85,10 +86,10 @@ class UsersViewSet(viewsets.ModelViewSet):
 
 
 class TokenView(APIView):
-    '''
+    """
     POST-запрос с username и confirmation_code
     возвращает JWT-токен.
-    '''
+    """
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
@@ -96,7 +97,7 @@ class TokenView(APIView):
         serializer.is_valid(raise_exception=True)
         username = serializer.data['username']
         user = get_object_or_404(User, username=username)
-        confirmation_code = serializer.data['confirmation_code']
+        confirmation_code = serializer.validated_data['confirmation_code']
         if not default_token_generator.check_token(user, confirmation_code):
             raise ValidationError('Неверный код')
         token = AccessToken.for_user(user)
@@ -121,14 +122,14 @@ class GenreViewSet(ModelMixinSet):
     serializer_class = GenreSerializer
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', )
+    search_fields = ('name',)
     lookup_field = 'slug'
     pagination_class = LimitOffsetPagination
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Получить список всех объектов без токена."""
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
     permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter

@@ -1,5 +1,6 @@
-from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from rest_framework import serializers
 from datetime import date
 
 from reviews.models import Comments, Genre, Category, Title, Review
@@ -124,13 +125,18 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('title', 'author')
 
     def validate(self, data):
-        if Review.objects.filter(
-            author=self.context['request'].user,
-            title_id=self.context['view'].kwargs.get('title_id')
-        ).exists() and self.context['request'].method == 'POST':
-            raise serializers.ValidationError(
-                'Нельзя оставить два отзыва на одно произведение.')
+        if self.context['request'].method == 'POST':
+            title_id = self.context['view'].kwargs['title_id']
+            title = get_object_or_404(Title, id=title_id)
+            author = self.context['request'].user
+            if Review.objects.filter(title=title, author=author).exists():
+                raise serializers.ValidationError(
+                    'Нельзя оставить два отзыва на одно произведение.')
+            data['author'] = author
+            data['title'] = title
+
         return data
+
 
 
 class CommentSerializer(serializers.ModelSerializer):
