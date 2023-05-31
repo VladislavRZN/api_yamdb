@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404
-from django.db.models import Avg
-from rest_framework import serializers
 from datetime import date
 
-from reviews.models import Comments, Genre, Category, Title, Review
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
+from rest_framework import serializers
+from reviews.models import Category, Comments, Genre, Review, Title
 from users.models import User
 
 
@@ -136,7 +136,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             data['title'] = title
 
         return data
-
 
 
 class CommentSerializer(serializers.ModelSerializer):
