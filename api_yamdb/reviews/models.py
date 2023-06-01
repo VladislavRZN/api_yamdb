@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -57,7 +59,12 @@ class Title(models.Model):
         "Название",
         max_length=256,
     )
-    year = models.IntegerField("Год выпуска")
+    year = models.PositiveSmallIntegerField(
+        'Год выпуска',
+        validators=[
+            MaxValueValidator(date.today().year,
+                              message='Год не может быть больше текущего')],
+    )
 
     description = models.TextField("Описание", blank=True, null=True)
 

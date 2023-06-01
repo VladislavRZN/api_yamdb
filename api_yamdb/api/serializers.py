@@ -1,7 +1,3 @@
-from datetime import date
-
-from django.db.models import Avg
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from reviews.models import Category, Comments, Genre, Review, Title
 from users.models import User
@@ -77,23 +73,12 @@ class TitleReadSerializer(serializers.ModelSerializer):
         read_only=True,
         many=True
     )
-    rating = serializers.SerializerMethodField()
+    rating = serializers.FloatField(max_value=10, min_value=0)
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'genre', 'category', 'name', 'year', 'description',
+                  'rating')
         model = Title
-
-    def get_rating(self, obj):
-        if obj.reviews.count() == 0:
-            return None
-        rev = Review.objects.filter(title=obj).aggregate(rating=Avg('score'))
-        return rev['rating']
-
-    def validate_year(self, value):
-        if value > date.today().year:
-            raise serializers.ValidationError(
-                'Год не межет быть больше текущего.')
-        return value
 
 
 class TitleWriteSerializer(serializers.ModelSerializer):
@@ -125,16 +110,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('title', 'author')
 
     def validate(self, data):
-        if self.context['request'].method == 'POST':
-            title_id = self.context['view'].kwargs['title_id']
-            title = get_object_or_404(Title, id=title_id)
-            author = self.context['request'].user
-            if Review.objects.filter(title=title, author=author).exists():
-                raise serializers.ValidationError(
-                    'Нельзя оставить два отзыва на одно произведение.')
-            data['author'] = author
-            data['title'] = title
-
+        if (self.context['request'].method == 'POST') and (
+            Review.objects.filter(
+                author=self.context['request'].user,
+                title_id=self.context['view'].kwargs.get('title_id'))
+                .exists()):
+            raise serializers.ValidationError(
+                'Нельзя оставить два отзыва на одно произведение.')
         return data
 
 
