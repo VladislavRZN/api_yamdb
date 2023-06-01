@@ -1,5 +1,3 @@
-from datetime import date
-
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -49,37 +47,25 @@ class Genre(models.Model):
 class Title(models.Model):
     category = models.ForeignKey(
         Category,
-        verbose_name='Slug категории',
+        verbose_name="Slug категории",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
-    genre = models.ManyToManyField(
-        Genre,
-        through='GenreTitle'
-    )
+    genre = models.ManyToManyField(Genre, through="GenreTitle")
     name = models.CharField(
-        'Название',
+        "Название",
         max_length=256,
     )
-    year = models.PositiveSmallIntegerField(
-        'Год выпуска',
-        validators=[
-            MaxValueValidator(date.today().year,
-                              message='Год не может быть больше текущего')],
-    )
+    year = models.IntegerField("Год выпуска")
 
-    description = models.TextField(
-        'Описание',
-        blank=True,
-        null=True
-    )
+    description = models.TextField("Описание", blank=True, null=True)
 
     class Meta:
-        ordering = ('year', 'name')
-        verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'
-        default_related_name = 'titles'
+        ordering = ("year", "name")
+        verbose_name = "Произведение"
+        verbose_name_plural = "Произведения"
+        default_related_name = "titles"
 
     def __str__(self):
         return self.name
@@ -105,35 +91,28 @@ class GenreTitle(models.Model):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='reviews'
+        Title, on_delete=models.CASCADE, related_name="reviews"
     )
     author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews'
+        User, on_delete=models.CASCADE, related_name="reviews"
     )
     pub_date = models.DateTimeField(
-        'Дата отзыва',
-        auto_now_add=True,
-        db_index=True
+        "Дата отзыва", auto_now_add=True, db_index=True
     )
     text = models.TextField()
-    score = models.IntegerField(
-        'Оценить',
+    score = models.PositiveSmallIntegerField(
+        "Оценить",
         default=5,
-        validators=[
-            MaxValueValidator(10),
-            MinValueValidator(1)
-        ],
+        validators=[MaxValueValidator(10), MinValueValidator(1)],
+        error_messages={"validators": "Допустимая оценка от 1 до 10!"},
     )
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ["-pub_date"]
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'], name="unique_review")
+                fields=["author", "title"], name="unique_review"
+            )
         ]
 
 
